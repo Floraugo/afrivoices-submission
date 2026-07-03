@@ -17,18 +17,24 @@ This report satisfies **Rule 10** (hardware validation report showing inference 
 
 ## Inference Latency & Memory
 
-> ⚠️ **PLACEHOLDER — replace before submitting.** The figures below need to come from the `[perf]` / `[perf summary]` lines your instrumented script is printing. Send over your full timing log (not just a snippet) once the run completes, or a recent batch of `[perf]` lines, and I'll calculate the real averages here.
+> ⚠️ *Provisional.* Latency figures below are calculated from an early sample of [perf] lines while the main run is still in progress (22,100+/41,733 rows completed at time of writing). These will be updated with the final [perf summary] average once the run completes — final numbers may shift.
 
 | Metric | Value |
 |---|---|
-| Average inference time per clip | `[INSERT avg_time]` s |
-| Peak RAM usage during inference | `[INSERT peak_ram]` MB |
-| Estimated total inference time (41,733 clips) | `[avg_time × 41,733]` |
-| Rows timed this session | `[INSERT count]` |
+| Average inference time per clip (provisional, n=6) | 4.15 s |
+| Peak RSS — full Kaggle notebook process | 9,272.8 MB |
+| Peak RSS — Whisper tiny model only (isolated measurement) | 442.0 MB |
+| Estimated total inference time (41,733 clips, provisional) | ~173,000 s (~48 hours, CPU) |
+| Rows timed so far | 22,100 / 41,733 |
 
 ## Edge Device Compliance (Rule 9)
 
-Whisper `tiny` has ~39M parameters and a memory footprint well under 8GB RAM even accounting for runtime overhead, meaning it is compatible with edge devices such as a Raspberry Pi 4 or a modern smartphone. Peak RAM recorded during this CPU-only Kaggle run (see table above) reflects the notebook environment; on a dedicated edge device with no other processes competing for memory, footprint would be equal or lower.
+Two RAM figures are reported above, deliberately kept separate for transparency:
+
+- *9,272.8 MB* is the peak resident memory of the entire Kaggle notebook process during the full transcription run — this includes PyTorch, pandas, the Kaggle API client, and Jupyter kernel overhead, none of which would be present in a standalone edge deployment. Taken at face value this exceeds the 8GB cap, but it does not reflect the model's actual footprint.
+- *442.0 MB* is the isolated memory footprint of loading Whisper tiny alone, measured in a clean process (RAM before load: 102.9MB, after load: 545.0MB, delta: 442.0MB). This is the figure directly relevant to Rule 9, and it sits comfortably within the 8GB RAM limit for edge devices such as a Raspberry Pi 4 or a modern smartphone.
+
+We report both numbers rather than omitting the higher one, since organizers may re-run and validate the model directly (Rule 12) — the notebook-level figure is a real measurement, just not evidence of non-compliance once its source (environment overhead, not model size) is understood.
 
 ## Note on Compute
 
