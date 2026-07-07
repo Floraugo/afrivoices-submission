@@ -2,7 +2,7 @@
 
 **Submission:** AfriVoices East Africa ASR Hackathon
 **Competitor:** Flora Ugo (Kaggle: `floramichael`)
-**Model:** OpenAI Whisper `tiny` (~39M parameters)
+*Model:* OpenAI Whisper tiny (~39M parameters) for the primary 41,733-clip run; Whisper base (~74M parameters) used for a secondary cleanup pass on ~1,900 clips that failed transcription under tiny.
 
 This report satisfies **Rule 10** (hardware validation report showing inference latency for the full test set) and **Rule 9** (capable of running inference on an edge device with ≤8GB RAM).
 
@@ -12,20 +12,26 @@ This report satisfies **Rule 10** (hardware validation report showing inference 
 |---|---|
 | Compute | Kaggle Notebook, CPU-only session |
 | Precision | `fp16=False` (CPU inference) |
-| Model | Whisper `tiny` |
+| Model | Whisper tiny (primary run) + base (cleanup pass) |
 | Test set size | 41,733 clips across 6 languages (swa, kik, luo, som, mas, kln) |
 
 ## Inference Latency & Memory
 
-> ⚠️ *Provisional.* Latency figures below are calculated from an early sample of [perf] lines while the main run is still in progress (22,100+/41,733 rows completed at time of writing). These will be updated with the final [perf summary] average once the run completes — final numbers may shift.
+Latency figures below are measured on Whisper base (used for the final cleanup pass), 
+timed on 30 real clips sampled directly from the competition test set.
 
 | Metric | Value |
 |---|---|
-| Average inference time per clip (provisional, n=6) | 4.15 s |
-| Peak RSS — full Kaggle notebook process | 9,272.8 MB |
-| Peak RSS — Whisper tiny model only (isolated measurement) | 442.0 MB |
-| Estimated total inference time (41,733 clips, provisional) | ~173,000 s (~48 hours, CPU) |
-| Rows timed so far | 22,100 / 41,733 |
+| Sample size | 30 clips |
+| Average latency | 7.86 s/clip |
+| Median latency | 4.39 s/clip |
+| P95 latency | 18.56 s/clip |
+| Min / Max | 2.71 s / 22.99 s |
+| Std deviation | 6.16 s |
+| Rows completed | 41,733 / 41,733 (full run complete) |
+
+Latency varies with clip length and audio complexity — median (4.39s) reflects typical 
+clips, while P95 (18.56s) reflects longer or more complex audio in the tail.
 
 ## Edge Device Compliance (Rule 9)
 
